@@ -4,14 +4,14 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public abstract class Entity {
 
-    private World world;
-    private Body body;
+    protected World world;
+    protected Body body;
 
-    public Entity(World world, int x, int y){
+    public Entity(World world, float x, float y){
         initBodyAtCords(world, x, y);
     }
 
-    private void initBodyAtCords(World world, int x, int y){
+    protected void initBodyAtCords(World world, float x, float y){
         this.world = world;
 
         BodyDef bodyDef = new BodyDef();
