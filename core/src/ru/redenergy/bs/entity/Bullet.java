@@ -20,7 +20,6 @@ public class Bullet extends Entity {
         bodyDef.position.set(x, y);
         bodyDef.bullet = true;
         body = world.createBody(bodyDef);
-
         CircleShape shape = new CircleShape();
         shape.setRadius(0.5F);
 

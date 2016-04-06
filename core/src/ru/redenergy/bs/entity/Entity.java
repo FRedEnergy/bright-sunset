@@ -1,5 +1,7 @@
 package ru.redenergy.bs.entity;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
 
 public abstract class Entity {
@@ -9,6 +11,10 @@ public abstract class Entity {
 
     public Entity(World world, float x, float y){
         initBodyAtCords(world, x, y);
+    }
+
+    public void render(SpriteBatch batch, OrthographicCamera camera){
+
     }
 
     protected void initBodyAtCords(World world, float x, float y){
