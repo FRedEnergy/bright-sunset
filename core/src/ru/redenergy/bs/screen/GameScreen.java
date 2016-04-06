@@ -26,6 +26,7 @@ import ru.redenergy.bs.BrightSunsetGame;
 import ru.redenergy.bs.entity.Bullet;
 import ru.redenergy.bs.entity.Entity;
 import ru.redenergy.bs.entity.Player;
+import ru.redenergy.bs.map.Box2dTiledResolver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +138,7 @@ public class GameScreen implements Screen{
 
     private void setupMap(){
         map = new TmxMapLoader().load("test-map.tmx");
+        Box2dTiledResolver.populateMap(map, world);
         mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 2F);
     }
 
