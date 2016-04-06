@@ -86,11 +86,13 @@ public class GameScreen implements Screen{
     }
 
     private void shoot(){
-        Bullet bullet = new Bullet(world, player.getBody().getPosition().x + 10, player.getBody().getPosition().y);
+        float cos = (float) Math.cos(player.getBody().getAngle());
+        float sin = (float) Math.sin(player.getBody().getAngle());
+        Bullet bullet = new Bullet(world, player.getBody().getPosition().x + (10 * cos), player.getBody().getPosition().y + (10 * sin));
         bullet.getBody().setTransform(bullet.getBody().getPosition(), player.getBody().getAngle());
         float speed = 4000F;
-        float impulseX = (float) (speed * Math.cos(player.getBody().getAngle()));
-        float impulseY = (float) (speed * Math.sin(player.getBody().getAngle()));
+        float impulseX = speed * cos;
+        float impulseY = speed * sin;
         bullet.getBody().setLinearVelocity(impulseX, impulseY);//.applyForce(new Vector2(impulseX, impulseY), player.getBody().getWorldCenter(), true);
     }
 
