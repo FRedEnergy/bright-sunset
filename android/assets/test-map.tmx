@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="left-down" width="10" height="10" tilewidth="32" tileheight="32" nextobjectid="20">
  <tileset firstgid="1" name="environment" tilewidth="32" tileheight="32" tilecount="400" columns="20">
-  <image source="C:/Users/Zeltaz/Desktop/maptiles/shootemup/tileset01.png" width="640" height="640"/>
+  <image source="tileset01.png" width="640" height="640"/>
  </tileset>
  <layer name="ground" width="10" height="10">
   <data encoding="csv">
