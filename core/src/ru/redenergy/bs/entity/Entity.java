@@ -30,7 +30,7 @@ public abstract class Entity {
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
-        fixtureDef.friction = 0.225f;
+        fixtureDef.friction = 0.0f;
         fixtureDef.density = 0.85f;
 
         body.createFixture(fixtureDef);
