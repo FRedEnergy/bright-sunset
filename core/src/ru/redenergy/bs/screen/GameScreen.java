@@ -13,6 +13,10 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -24,12 +28,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import ru.redenergy.bs.BrightSunsetGame;
 import ru.redenergy.bs.entity.Bullet;
+import ru.redenergy.bs.entity.Enemy;
 import ru.redenergy.bs.entity.Entity;
 import ru.redenergy.bs.entity.Player;
 import ru.redenergy.bs.map.Box2dTiledResolver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GameScreen implements Screen{
 
@@ -44,6 +50,7 @@ public class GameScreen implements Screen{
     private OrthogonalTiledMapRenderer mapRenderer;
     private List<Entity> entities = new ArrayList<Entity>();
     private SpriteBatch batch;
+    private Random rng = new Random();
 
     @Override
     public void show() {
@@ -79,17 +86,6 @@ public class GameScreen implements Screen{
         for(Entity entity: entities)
             entity.render(batch, camera);
         batch.end();
-    }
-
-    private void shoot(){
-        float speed = 4000F;
-        float cos = (float) Math.cos(player.getBody().getAngle());
-        float sin = (float) Math.sin(player.getBody().getAngle());
-        Bullet bullet = new Bullet(world, player.getBody().getPosition().x + (10 * cos), player.getBody().getPosition().y + (10 * sin));
-        bullet.getBody().setTransform(bullet.getBody().getPosition(), player.getBody().getAngle());
-        float impulseX = speed * cos;
-        float impulseY = speed * sin;
-        bullet.getBody().setLinearVelocity(impulseX, impulseY);
     }
 
     private void updatePlayerRotation(){
@@ -136,6 +132,8 @@ public class GameScreen implements Screen{
 
     }
 
+
+
     private void setupMap(){
         map = new TmxMapLoader().load("test-map.tmx");
         Box2dTiledResolver.populateMap(map, world);
@@ -160,7 +158,7 @@ public class GameScreen implements Screen{
         shootButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                shoot();
+                entities.add(player.shoot());
                 return true;
             }
         });

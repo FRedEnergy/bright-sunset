@@ -15,6 +15,18 @@ public class Player extends Entity{
         charTexture = new Sprite(new Texture(Gdx.files.internal("char/pistol/idle/idle_pistol_0.png")));
     }
 
+    public Bullet shoot(){
+        float speed = 4000F;
+        float cos = (float) Math.cos(body.getAngle());
+        float sin = (float) Math.sin(body.getAngle());
+        Bullet bullet = new Bullet(world, body.getPosition().x + (10 * cos), body.getPosition().y + (10 * sin));
+        bullet.getBody().setTransform(bullet.getBody().getPosition(), body.getAngle());
+        float impulseX = speed * cos;
+        float impulseY = speed * sin;
+        bullet.getBody().setLinearVelocity(impulseX, impulseY);
+        return bullet;
+    }
+
     @Override
     public void render(SpriteBatch batch, OrthographicCamera camera) {
         super.render(batch, camera);
