@@ -6,9 +6,20 @@ import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-public class Bullet extends Entity {
-    public Bullet(World world, float x, float y) {
+public class Bullet extends EntityProjectile {
+    protected float damage;
+    public Bullet(World world, float x, float y, float damage) {
         super(world, x, y);
+        this.damage = damage;
+    }
+
+    @Override
+    public void onCollideWith(Entity entity) {
+        super.onCollideWith(entity);
+        this.setDead(true);
+        if(entity instanceof EntityLiving){
+            ((EntityLiving) entity).setHealth(((EntityLiving) entity).getHealth() - damage);
+        }
     }
 
     @Override

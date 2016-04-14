@@ -8,12 +8,34 @@ public abstract class Entity {
 
     protected World world;
     protected Body body;
+    protected boolean isDead;
 
     public Entity(World world, float x, float y){
         initBodyAtCords(world, x, y);
+        body.setUserData(this);
     }
 
     public void render(SpriteBatch batch, OrthographicCamera camera){
+
+    }
+
+    public void update(){
+        if(isDead){
+            world.destroyBody(body);
+            body.setUserData(null);
+            body = null;
+        }
+    }
+
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
+    public void onCollideWith(Entity entity){
 
     }
 
@@ -31,7 +53,7 @@ public abstract class Entity {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.friction = 0.0f;
-        fixtureDef.density = 0.85f;
+        fixtureDef.density = 0.0f;
 
         body.createFixture(fixtureDef);
         shape.dispose();

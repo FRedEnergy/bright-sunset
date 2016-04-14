@@ -6,25 +6,46 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
+import ru.redenergy.bs.item.weapon.PistolWeapon;
+import ru.redenergy.bs.item.weapon.Weapon;
 
-public class Player extends Entity{
+public class Player extends EntityLiving{
 
     private Sprite charTexture;
+
+    private Weapon weapon;
+
     public Player(World world, int x, int y) {
         super(world, x, y);
+        setMaxHealth(20F);
+        setHealth(10F);
+        setWeapon(new PistolWeapon());
         charTexture = new Sprite(new Texture(Gdx.files.internal("char/pistol/idle/idle_pistol_0.png")));
     }
 
     public Bullet shoot(){
-        float speed = 4000F;
+        if(weapon == null) return null;
+        float speed = 6000F;
         float cos = (float) Math.cos(body.getAngle());
         float sin = (float) Math.sin(body.getAngle());
-        Bullet bullet = new Bullet(world, body.getPosition().x + (10 * cos), body.getPosition().y + (10 * sin));
+        float gunOffsetX = 10F;
+        float gunOffsetY = -7F;
+        float x = body.getPosition().x + (gunOffsetX * cos) - (gunOffsetY * sin);
+        float y = body.getPosition().y + (gunOffsetX * sin) + (gunOffsetY * cos);
+        Bullet bullet = weapon.createBullet(world, x, y);
         bullet.getBody().setTransform(bullet.getBody().getPosition(), body.getAngle());
         float impulseX = speed * cos;
         float impulseY = speed * sin;
         bullet.getBody().setLinearVelocity(impulseX, impulseY);
         return bullet;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public void setWeapon(Weapon weapon) {
+        this.weapon = weapon;
     }
 
     @Override
