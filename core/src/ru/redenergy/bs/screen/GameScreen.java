@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import ru.redenergy.bs.BrightSunsetGame;
+import ru.redenergy.bs.GameSession;
 import ru.redenergy.bs.entity.Bullet;
 import ru.redenergy.bs.entity.Enemy;
 import ru.redenergy.bs.entity.Entity;
@@ -39,105 +40,46 @@ import java.util.Random;
 
 public class GameScreen implements Screen{
 
+    private GameSession session;
     private Stage stage;
     private OrthographicCamera camera;
-    private World world;
-    private Player player;
     private Box2DDebugRenderer debugRenderer;
     private Touchpad touchpad;
     private Button shootButton;
-    private TiledMap map;
     private OrthogonalTiledMapRenderer mapRenderer;
-    private List<Entity> entities = new ArrayList<Entity>();
     private SpriteBatch batch;
-    private Random rng = new Random();
 
     @Override
     public void show() {
-        entities.clear();
-        Box2D.init();
+        session = new GameSession();
+        session.init();
         batch = new SpriteBatch();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, Gdx.graphics.getWidth() * BrightSunsetGame.VIEWPORT_SCALE, Gdx.graphics.getHeight() * BrightSunsetGame.VIEWPORT_SCALE);
-        world = new World(new Vector2(0, 0), true);
-        player = new Player(world, 20, 20);
-        entities.add(player);
         debugRenderer = new Box2DDebugRenderer();
         setupControllingActors();
-        setupMap();
+        mapRenderer = new OrthogonalTiledMapRenderer(session.map, 1 / 2F);
     }
     @Override
     public void render(float delta) {
         Gdx.gl20.glClearColor(0, 0, 0, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        camera.position.x = player.getBody().getPosition().x;
-        camera.position.y = player.getBody().getPosition().y;
-        updatePlayerPos();
-        updatePlayerRotation();
+        session.update();
+        camera.position.x = session.player.getBody().getPosition().x;
+        camera.position.y = session.player.getBody().getPosition().y;
+        session.updatePlayerPos(touchpad);
+        session.updatePlayerRotation(touchpad);
         camera.zoom = 0.25F;
         mapRenderer.setView(camera);
         mapRenderer.render();
         stage.draw();
         camera.update();
-        world.step(1F / 60F, 6, 2);
-        debugRenderer.render(world, camera.combined);
+        debugRenderer.render(session.world, camera.combined);
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
-        for(Entity entity: entities)
+        for(Entity entity: session.entities)
             entity.render(batch, camera);
         batch.end();
-    }
-
-    private void updatePlayerRotation(){
-        if(!touchpad.isTouched()) return;
-        double degree = Math.atan2(touchpad.getKnobPercentY(), touchpad.getKnobPercentX());
-        player.getBody().setTransform(player.getBody().getPosition(), (float) degree);
-    }
-
-
-    private void updatePlayerPos(){
-        float maxVel = 75F;
-        Vector2 vel = player.getBody().getLinearVelocity();
-        float desiredVelX = maxVel * touchpad.getKnobPercentX();
-        float desiredVelY = maxVel * touchpad.getKnobPercentY();
-        float changeX = desiredVelX - vel.x;
-        float changeY = desiredVelY - vel.y;
-        float impulseX = player.getBody().getMass() * changeX / (1F / 60F);
-        float impulseY = player.getBody().getMass() * changeY / (1F/  60F);
-        player.getBody().applyForce(new Vector2(impulseX, impulseY), player.getBody().getWorldCenter(), true);
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-
-    }
-
-
-
-    private void setupMap(){
-        map = new TmxMapLoader().load("test-map.tmx");
-        Box2dTiledResolver.populateMap(map, world);
-        mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / 2F);
     }
 
     private void setupControllingActors(){
@@ -158,7 +100,7 @@ public class GameScreen implements Screen{
         shootButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                entities.add(player.shoot());
+                session.entities.add(session.player.shoot());
                 return true;
             }
         });
@@ -168,4 +110,20 @@ public class GameScreen implements Screen{
         stage.addActor(shootButton);
         Gdx.input.setInputProcessor(stage);
     }
+
+
+    @Override
+    public void resize(int width, int height) {}
+
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void hide() {}
+
+    @Override
+    public void dispose() {}
 }
