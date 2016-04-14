@@ -2,6 +2,7 @@ package ru.redenergy.bs.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,18 +21,13 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.utils.Align;
 import ru.redenergy.bs.BrightSunsetGame;
 import ru.redenergy.bs.GameSession;
-import ru.redenergy.bs.entity.Bullet;
-import ru.redenergy.bs.entity.Enemy;
-import ru.redenergy.bs.entity.Entity;
-import ru.redenergy.bs.entity.Player;
+import ru.redenergy.bs.entity.*;
 import ru.redenergy.bs.map.Box2dTiledResolver;
 
 import java.util.ArrayList;
@@ -48,6 +44,7 @@ public class GameScreen implements Screen{
     private Button shootButton;
     private OrthogonalTiledMapRenderer mapRenderer;
     private SpriteBatch batch;
+    private Label scoreLabel;
 
     @Override
     public void show() {
@@ -65,11 +62,12 @@ public class GameScreen implements Screen{
         Gdx.gl20.glClearColor(0, 0, 0, 1);
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
         session.update();
+        scoreLabel.setText(String.valueOf(session.score));
         camera.position.x = session.player.getBody().getPosition().x;
         camera.position.y = session.player.getBody().getPosition().y;
         session.updatePlayerPos(touchpad);
         session.updatePlayerRotation(touchpad);
-        camera.zoom = 0.25F;
+        camera.zoom = 0.4F;
         mapRenderer.setView(camera);
         mapRenderer.render();
         stage.draw();
@@ -79,10 +77,21 @@ public class GameScreen implements Screen{
         batch.setProjectionMatrix(camera.combined);
         for(Entity entity: session.entities)
             entity.render(batch, camera);
+        for(Particle particle: session.particles)
+            particle.render(batch, camera);
         batch.end();
     }
 
     private void setupControllingActors(){
+        BitmapFont font = new BitmapFont();
+        font.setColor(Color.YELLOW);
+        font.getData().setScale(2, 2);
+        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.YELLOW);
+        scoreLabel = new Label(String.valueOf(session.score), labelStyle);
+        scoreLabel.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() - 80, Align.center);
+
         Skin touchpadSkin = new Skin();
         touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
         touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
@@ -106,6 +115,7 @@ public class GameScreen implements Screen{
         });
         shootButton.setBounds(Gdx.graphics.getWidth() - 70, 70, 50, 50);
         stage = new Stage();
+        stage.addActor(scoreLabel);
         stage.addActor(touchpad);
         stage.addActor(shootButton);
         Gdx.input.setInputProcessor(stage);

@@ -11,7 +11,7 @@ import ru.redenergy.bs.item.weapon.Weapon;
 
 public class Player extends EntityLiving{
 
-    private Sprite charTexture;
+    private static Sprite charTexture = new Sprite(new Texture(Gdx.files.internal("char/pistol/idle/idle_pistol_0.png")));;
 
     private Weapon weapon;
 
@@ -20,7 +20,6 @@ public class Player extends EntityLiving{
         setMaxHealth(20F);
         setHealth(10F);
         setWeapon(new PistolWeapon());
-        charTexture = new Sprite(new Texture(Gdx.files.internal("char/pistol/idle/idle_pistol_0.png")));
     }
 
     public Bullet shoot(){

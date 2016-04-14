@@ -48,7 +48,7 @@ public abstract class Entity {
         body = world.createBody(bodyDef);
 
         CircleShape shape = new CircleShape();
-        shape.setRadius(6F);
+        shape.setRadius(9);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

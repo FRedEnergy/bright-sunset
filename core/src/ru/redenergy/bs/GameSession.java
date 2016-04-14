@@ -7,8 +7,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import ru.redenergy.bs.entity.*;
 import ru.redenergy.bs.map.Box2dTiledResolver;
+import ru.redenergy.bs.screen.FinishScreen;
 
-import java.sql.BatchUpdateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,15 +20,17 @@ public class GameSession {
     public Player player;
     public TiledMap map;
     public List<Entity> entities = new ArrayList<Entity>();
+    public List<Particle> particles = new ArrayList<Particle>();
     private Random rng = new Random();
+    public int score = 0;
 
     public void init(){
         entities.clear();
         Box2D.init();
         world = new World(new Vector2(0, 0), true);
-        player = new Player(world, 20, 20);
-        entities.add(player);
         setupMap();
+        player = new Player(world, 512, 512);
+        entities.add(player);
         setupListeners();
     }
 
@@ -37,18 +39,48 @@ public class GameSession {
         for(ListIterator iterator = entities.listIterator(); iterator.hasNext();){
             Entity entity = (Entity) iterator.next();
             if(entity.isDead()){
+                if(entity == player){
+                    endGame();
+                    break;
+                }
+                if(entity instanceof Enemy) {
+                    score++;
+                    spawnBlood(entity.getBody().getPosition().x, entity.getBody().getPosition().y, 15);
+                }
                 iterator.remove();
             }
             entity.update();
         }
-        if(rng.nextInt(600) == 0){
+        for(ListIterator iterator = particles.listIterator(); iterator.hasNext();){
+            Particle particle = (Particle) iterator.next();
+            if(particle.isDead()){
+                iterator.remove();
+            }
+            particle.update();
+        }
+        if(rng.nextInt(200) == 0){
             if(countEntities(Enemy.class) < 20) {
                 int angle = rng.nextInt(360);
-                float x = (float) (Math.cos(angle) * (rng.nextInt(100) + 100));
-                float y = (float) (Math.sin(angle) * (rng.nextInt(100) + 100));
-                entities.add(new Enemy(world, x, y));
+                float x = (float) (player.getBody().getPosition().x + (Math.cos(angle) * (rng.nextInt(100) + 100)));
+                float y = (float) (player.getBody().getPosition().x + (Math.sin(angle) * (rng.nextInt(100) + 100)));
+                if(validateEnemySpawnPos(x, y)) {
+                    entities.add(new Enemy(world, x, y));
+                }
             }
         }
+    }
+
+    private boolean validateEnemySpawnPos(float x, float y){
+        return (x > 20 && x < 1000 && y > 20 && y < 1000);
+    }
+
+    private void spawnBlood(float x, float y, int amount){
+        for(int i = 0; i < amount; i++)
+            particles.add(new BloodParticle(x + rng.nextInt(10) - 5, y  + rng.nextInt(10) - 5));
+    }
+
+    private void endGame(){
+        BrightSunsetGame.instance.setScreen(new FinishScreen(score));
     }
 
     public int countEntities(Class entity){
@@ -78,7 +110,7 @@ public class GameSession {
     }
 
     private void setupMap(){
-        map = new TmxMapLoader().load("test-map.tmx");
+        map = new TmxMapLoader().load("main-map.tmx");
         Box2dTiledResolver.populateMap(map, world);
     }
 
@@ -112,7 +144,8 @@ public class GameSession {
         ContactFilter filter = new ContactFilter() {
             @Override
             public boolean shouldCollide(Fixture fixtureA, Fixture fixtureB) {
-                return !(fixtureA.getBody().getUserData() instanceof EntityLiving && fixtureB.getBody().getUserData() instanceof EntityLiving);
+                return !(fixtureA.getBody().getUserData() instanceof Player && fixtureB.getBody().getUserData() instanceof EntityLiving) ||
+                        !(fixtureA.getBody().getUserData() instanceof EntityLiving && fixtureB.getBody().getUserData() instanceof Player);
             }
         };
         world.setContactFilter(filter);
