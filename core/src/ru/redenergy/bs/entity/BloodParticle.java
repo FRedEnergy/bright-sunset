@@ -17,7 +17,7 @@ public class BloodParticle extends Particle{
         super(x, y);
         setShape(ShapeRenderer.ShapeType.Filled);
         setColor(Color.RED);
-        setSize(0, 0, 2, 2);
+        setSize(0, 0, 1.5F, 1.5F);
     }
 
     @Override

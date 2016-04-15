@@ -53,7 +53,7 @@ public class Enemy extends EntityLiving {
         float impulseX = body.getMass() * changeX / (1F / 60F);
         float impulseY = body.getMass() * changeY / (1F / 60F);
         body.applyForce(new Vector2(impulseX, impulseY), body.getWorldCenter(), true);
-
+        float radius = 10F;
         world.QueryAABB(new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
@@ -64,11 +64,11 @@ public class Enemy extends EntityLiving {
                         pl.setHealth(pl.getHealth() - damage);
                         lastAttackTime = current;
                     }
-                    return true;
+                    return false;
                 }
-                return false;
+                return true;
             }
-        }, body.getPosition().x - 5, body.getPosition().y - 5, body.getPosition().x + 5, body.getPosition().y + 5);
+        }, body.getPosition().x - radius, body.getPosition().y - radius, body.getPosition().x + radius, body.getPosition().y + radius);
     }
 
     @Override

@@ -15,7 +15,7 @@ public class Particle {
     protected ShapeRenderer.ShapeType shape;
     protected float x, y, width, height;
 
-    private ShapeRenderer renderer = new ShapeRenderer();
+    private static ShapeRenderer renderer = new ShapeRenderer();
 
     public Particle(float x, float y) {
         this.xPos = x;
@@ -96,11 +96,12 @@ public class Particle {
     }
 
     public void render(SpriteBatch batch, OrthographicCamera camera) {
-        renderer.setProjectionMatrix(batch.getProjectionMatrix());
-        renderer.begin(shape);
+        renderer.setProjectionMatrix(camera.combined);
         renderer.setColor(color);
         renderer.rect(xPos, yPos, width, height);
-        renderer.end();
     }
 
+    public static ShapeRenderer getRenderer() {
+        return renderer;
+    }
 }

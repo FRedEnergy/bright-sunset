@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -73,12 +74,14 @@ public class GameScreen implements Screen{
         stage.draw();
         camera.update();
         debugRenderer.render(session.world, camera.combined);
+        Particle.getRenderer().begin(ShapeRenderer.ShapeType.Filled);
+        for(Particle particle: session.particles)
+            particle.render(batch, camera);
+        Particle.getRenderer().end();
         batch.begin();
         batch.setProjectionMatrix(camera.combined);
         for(Entity entity: session.entities)
             entity.render(batch, camera);
-        for(Particle particle: session.particles)
-            particle.render(batch, camera);
         batch.end();
     }
 
