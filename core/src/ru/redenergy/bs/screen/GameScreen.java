@@ -46,9 +46,11 @@ public class GameScreen implements Screen{
     private OrthogonalTiledMapRenderer mapRenderer;
     private SpriteBatch batch;
     private Label scoreLabel;
+    private Skin skin;
 
     @Override
     public void show() {
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         session = new GameSession();
         session.init();
         batch = new SpriteBatch();
@@ -91,24 +93,26 @@ public class GameScreen implements Screen{
         font.getData().setScale(2, 2);
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
-        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.YELLOW);
+        Label.LabelStyle labelStyle = skin.get(Label.LabelStyle.class);
+        labelStyle.font = new BitmapFont();
+        labelStyle.fontColor = Color.YELLOW;
         scoreLabel = new Label(String.valueOf(session.score), labelStyle);
         scoreLabel.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() - 80, Align.center);
 
-        Skin touchpadSkin = new Skin();
-        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
-        Touchpad.TouchpadStyle touchpadStyle = new Touchpad.TouchpadStyle();
-        Drawable touchBackground = touchpadSkin.getDrawable("touchBackground");
-        Drawable touchKnob = touchpadSkin.getDrawable("touchKnob");
-        touchpadStyle.background = touchBackground;
-        touchpadStyle.knob = touchKnob;
+        Skin textureSkin = new Skin();
+        textureSkin.add("crosshair", new Texture("crosshair.png"));
+        Touchpad.TouchpadStyle touchpadStyle = skin.get(Touchpad.TouchpadStyle.class);
         touchpad = new Touchpad(10, touchpadStyle);
-        touchpad.setBounds(15, 15, 200, 200);
+        touchpad.setBounds(25, 25, 175, 175);
 
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = new BitmapFont();
-        shootButton = new TextButton("Shoot", style);
+        Button.ButtonStyle btnStyle = new Button.ButtonStyle();
+        Drawable crosshair = textureSkin.getDrawable("crosshair");
+        btnStyle.up = crosshair;
+        btnStyle.down = crosshair;
+        btnStyle.over = crosshair;
+        shootButton = new Button(btnStyle);
         shootButton.addListener(new ClickListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -116,7 +120,7 @@ public class GameScreen implements Screen{
                 return true;
             }
         });
-        shootButton.setBounds(Gdx.graphics.getWidth() - 70, 70, 50, 50);
+        shootButton.setBounds(Gdx.graphics.getWidth() - 150, 50, 128, 128);
         stage = new Stage();
         stage.addActor(scoreLabel);
         stage.addActor(touchpad);
