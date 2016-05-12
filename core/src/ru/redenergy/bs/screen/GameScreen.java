@@ -75,7 +75,6 @@ public class GameScreen implements Screen{
         mapRenderer.render();
         stage.draw();
         camera.update();
-        debugRenderer.render(session.world, camera.combined);
         Particle.getRenderer().begin(ShapeRenderer.ShapeType.Filled);
         for(Particle particle: session.particles)
             particle.render(batch, camera);

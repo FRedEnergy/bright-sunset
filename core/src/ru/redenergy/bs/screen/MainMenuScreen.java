@@ -1,19 +1,12 @@
 package ru.redenergy.bs.screen;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-
 import ru.redenergy.bs.BrightSunsetGame;
 
 public class MainMenuScreen implements Screen {
@@ -44,8 +37,6 @@ public class MainMenuScreen implements Screen {
         mainTable.add(button).width(100F);
         mainTable.row().pad(5F);
         mainTable.add(new TextButton("Multiplayer", style)).width(100F);
-        mainTable.row().pad(5F);
-        mainTable.add(new TextButton("Credits", style)).width(100F);
         mainTable.row().pad(5F);
 
         stage.addActor(mainTable);
